@@ -161,6 +161,26 @@ void BufMgr::unPinPage(File* file, const PageId pageNo, const bool dirty)
 
 void BufMgr::flushFile(const File* file) 
 {
+	for(FrameId i = 0; i < numBufs; i++){
+		if (bufDescTable[i].file == file){
+			if(bufDescTable[i].pinCnt != 0){
+				throw PagePinnedException(file->filename(), bufDescTable[i].pageNo, bufDescTable[i].frameNo);
+			}
+			if(!bufDescTable[i].valid){
+				throw BadBufferException(bufDescTable[i].frameNo,bufDescTable[i].dirty, bufDescTable[i].valid, bufDescTable[i].refbit);
+			}
+			// (a)
+			if (bufDescTable[i].dirty){
+				bufDescTable[i].file -> writePage(bufPool[i]); // flushes the page to disk
+				bufDescTable[i].dirty = false; // sets dirty bit to false
+			}
+			//(b)
+			hashTable->remove(file, bufDescTable[i].pageNo);
+			//(c)
+			bufDescTable[i].Clear(); // clears frame
+			//(d)
+		}
+	}
 }
 
 void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
@@ -177,7 +197,15 @@ void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
 
 void BufMgr::disposePage(File* file, const PageId PageNo)
 {
-
+	FrameId frameNo = (FrameId)-1; // ************************ not sure, need to find alternative initial frameId value ***
+	hashTable->lookup(file, PageNo, frameNo);
+	if(frameNo == (FrameId)-1){
+		file->deletePage(PageNo);
+	}
+	else{
+		hashTable->remove(file, PageNo); // removes entry from hash table
+		bufDescTable[frameNo].Clear(); // frees frame
+	}
 }
 
 void BufMgr::printSelf(void)

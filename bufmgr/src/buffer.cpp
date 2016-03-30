@@ -36,6 +36,7 @@ BufMgr::BufMgr(std::uint32_t bufs)
 
 
 BufMgr::~BufMgr() {
+
 	/*
 	 * deallocates bufDescTable, hashTable and the bufPool, which is
 	 * everything that is created in the constructor (keyword new)
@@ -49,10 +50,10 @@ BufMgr::~BufMgr() {
 				bufDescTable[i].dirty = false;
 			}
 			else { //enters else only if bufPool[i] is true. then deallocates bufpool
-
 			}
 		}
 	}
+
 	delete bufDescTable;
 	delete bufPool;
 	delete hashTable;
@@ -60,7 +61,6 @@ BufMgr::~BufMgr() {
 
 void BufMgr::advanceClock()
 {
-
 	if(clockHand == (numBufs - 1)){
 		clockHand = 0;
 	}
@@ -69,13 +69,9 @@ void BufMgr::advanceClock()
 	}
 }
 
-void BufMgr::allocBuf(FrameId & frame)
-{
-	if(pinC = numBufs){
-		throw BufferExceededException():
-	}
-	int pinC;
-	pinC = 0; // counts number of pinned frames
+void BufMgr::allocBuf(FrameId & frame) 
+{ 
+	int pinC = 0; // counts number of pinned frames
 	bool cont = true;
 	while(cont){
 		advanceClock();
@@ -83,10 +79,12 @@ void BufMgr::allocBuf(FrameId & frame)
 			if(!bufDescTable[clockHand].refbit){
 				if(bufDescTable[clockHand].pinCnt == 0){
 					if(bufDescTable[clockHand].dirty){
-						// flush page to disk
+						Page* tempPage = readPage(bufDescTable[clockHand].pageNo);
+						writePage(tempPage);
 					}
 					else{
-						bufDescTable[i].set(file, pageNo); // correct parameters ?
+						bufDescTable[clockHand].file-> writePage();
+
 					}
 				}
 				else{ // advance clock pointer
@@ -95,11 +93,12 @@ void BufMgr::allocBuf(FrameId & frame)
 				}
 			}
 			else{// advance clock pointer
+				bufDescTable[clockHand].refbit = false;
 				cont = true;
 			}
 		}
 		else{
-			bufDescTable[i].set(file, pageNo); // correct parameters ?
+			bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
 		}
 	}
 	// throws exception if all buffer pages are pinned
@@ -115,6 +114,7 @@ void BufMgr::allocBuf(FrameId & frame)
 	}
 
 }
+
 void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 {
 }
@@ -126,32 +126,33 @@ void BufMgr::unPinPage(File* file, const PageId pageNo, const bool dirty)
 
 void BufMgr::flushFile(const File* file)
 {
+}
 
-	void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
+void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
+{
+}
+
+void BufMgr::disposePage(File* file, const PageId PageNo)
+{
+
+}
+
+void BufMgr::printSelf(void)
+{
+	BufDesc* tmpbuf;
+	int validFrames = 0;
+
+	for (std::uint32_t i = 0; i < numBufs; i++)
 	{
+		tmpbuf = &(bufDescTable[i]);
+		std::cout << "FrameNo:" << i << " ";
+		tmpbuf->Print();
+
+		if (tmpbuf->valid == true)
+			validFrames++;
 	}
 
-	void BufMgr::disposePage(File* file, const PageId PageNo)
-	{
-
-	}
-
-	void BufMgr::printSelf(void)
-	{
-		BufDesc* tmpbuf;
-		int validFrames = 0;
-
-		for (std::uint32_t i = 0; i < numBufs; i++)
-		{
-			tmpbuf = &(bufDescTable[i]);
-			std::cout << "FrameNo:" << i << " ";
-			tmpbuf->Print();
-
-			if (tmpbuf->valid == true)
-				validFrames++;
-		}
-
-		std::cout << "Total Number of Valid Frames:" << validFrames << "\n";
-	}
+	std::cout << "Total Number of Valid Frames:" << validFrames << "\n";
+}
 
 }

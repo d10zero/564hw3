@@ -78,10 +78,13 @@ void BufMgr::allocBuf(FrameId & frame)
 			if(!bufDescTable[clockHand].refbit){
 				if(bufDescTable[clockHand].pinCnt == 0){
 					if(bufDescTable[clockHand].dirty){
-						// flush page to disk
+						Page* tempPage = readPage(bufDescTable[clockHand].pageNo);
+						writePage(tempPage);
+					}
+						bufDescTable[clockHand].file-> writePage();
 					}
 					else{
-						bufDescTable[i].set(file, pageNo); // correct parameters ?
+						bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
 					}
 				}
 				else{ // advance clock pointer
@@ -94,7 +97,7 @@ void BufMgr::allocBuf(FrameId & frame)
 			}
 		}
 		else{
-			bufDescTable[i].set(file, pageNo); // correct parameters ?
+			bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
 		}
 	}
 	// throws exception if all buffer pages are pinned

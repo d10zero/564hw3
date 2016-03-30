@@ -36,6 +36,22 @@ BufMgr::BufMgr(std::uint32_t bufs)
 
 
 BufMgr::~BufMgr() {
+<<<<<<< HEAD
+	/*
+	 * deallocates bufDescTable, hashTable and the bufPool, which is
+	 * everything that is created in the constructor (keyword new)
+	 *
+	 * */
+	for(FrameId i = 0; i < numBufs; i++){
+		while(bufDescTable[i].valid){
+			if(bufDescTable[i].dirty){
+				 //flushes out dirty bit
+				bufDescTable[i].file -> writePage(bufPool[i]);
+				bufDescTable[i].dirty = false;
+			}
+			else { //enters else only if bufPool[i] is true. then deallocates bufpool
+
+=======
 	/*deallocates BufDesc table and the buffer pool */
 	for(FrameId i = 0; i < numBufs; i++){
 		bufDesc* tmpBufDesc = bufDescTable[i];
@@ -51,16 +67,26 @@ BufMgr::~BufMgr() {
 				tmpBufPool = bufpool[i];
 				bufPool[i] = bufpool[i]->next;
 				delete tmpbufPool;
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 			}
 		}
 	}
 	delete bufDescTable;
+<<<<<<< HEAD
+	delete bufPool;
+	delete hashTable;
+=======
 	delete bufpool;
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 }
 
 void BufMgr::advanceClock()
 {
+<<<<<<< HEAD
+	if(clockHand == (numBufs - 1)){
+=======
 	if(clockHand = numBufs - 1){
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 		clockHand = 0;
 	}
 	else{
@@ -70,6 +96,31 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 { 
+<<<<<<< HEAD
+	for(FrameId i = 0; i < numBufs; i++){
+		int pinC = 0;
+		if (bufDescTable[i].refbit){ //
+			bufDescTable[i].refbit = false;
+			advanceClock();
+		}
+		else{
+			if(bufDescTable[i].dirty){
+				// write to page to disk, then select for replacement
+				hashTable.remove(bufDescTable.file, bufDescTable.pageNo) // removes page from frame
+			  hashTable.insert(bufDescTable.file, // ????
+			}
+			else if(bufDescTable[i].pinCnt > 0){ // if page is pinned (should value be 0?) *****
+				pinC = pinC + 1; // increment pinned count.
+			}
+			else{
+				// this frame is selected for replacement
+			}
+		}
+	}
+	if(pinC = numBufs){
+		throw BufferExceededException():
+	}
+=======
 	int pinC = 0; // counts number of pinned frames
 	bool cont = true;
 	while(cont){
@@ -113,10 +164,15 @@ void BufMgr::allocBuf(FrameId & frame)
 	}
 
 }
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 
 
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 {
 }

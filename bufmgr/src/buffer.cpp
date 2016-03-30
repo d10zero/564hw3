@@ -76,15 +76,14 @@ void BufMgr::allocBuf(FrameId & frame)
 	while(cont){
 		advanceClock();
 		if(bufDescTable[clockHand].valid){ // else: call set() on the frame
+			hashTable.remove(bufDescTable[clockHand].file, bufDescTable[clockHand].pageNo);
 			if(!bufDescTable[clockHand].refbit){
 				if(bufDescTable[clockHand].pinCnt == 0){
 					if(bufDescTable[clockHand].dirty){
-						Page* tempPage = readPage(bufDescTable[clockHand].pageNo);
-						writePage(tempPage);
-					}
-					else{
-						bufDescTable[clockHand].file-> writePage();
-
+						Page tempPage = bufDescTable[clockHand].file.readPage(bufDescTable[clockHand].pageNo);
+						flushFile(bufDescTable[clockHand].file);
+						bufDescTable[clockHand].Set(bufDescTable[clockHand].file, bufDescTable[clockHand].pageNo);
+						cont = false;
 					}
 				}
 				else{ // advance clock pointer
@@ -98,20 +97,16 @@ void BufMgr::allocBuf(FrameId & frame)
 			}
 		}
 		else{
-			bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
+			bufDescTable[clockHand].Set(bufDescTable[clockHand].file, bufDescTable[clockHand].pageNo);
+			cont = false;
 		}
 	}
 	// throws exception if all buffer pages are pinned
-	if(pinC = numBufs){
-		throw BufferExceededException():
+	if(sizeof(pinC) == sizeof(numBufs)){
+		throw BufferExceededException();
 	}
 	// Use frame
-	if(bufDescTable[clockHand].valid){
-		// remove entry from hash table
-		if (hashTable.lookup(file,pageNo, frame) == frame){
-			hashTable.remove(file, pageNo); // correct parameters ?
-		}
-	}
+
 
 }
 

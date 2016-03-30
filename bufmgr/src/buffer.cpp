@@ -36,6 +36,7 @@ BufMgr::BufMgr(std::uint32_t bufs)
 
 
 BufMgr::~BufMgr() {
+<<<<<<< HEAD
 	/*
 	 * deallocates bufDescTable, hashTable and the bufPool, which is
 	 * everything that is created in the constructor (keyword new)
@@ -50,17 +51,42 @@ BufMgr::~BufMgr() {
 			}
 			else { //enters else only if bufPool[i] is true. then deallocates bufpool
 
+=======
+	/*deallocates BufDesc table and the buffer pool */
+	for(FrameId i = 0; i < numBufs; i++){
+		bufDesc* tmpBufDesc = bufDescTable[i];
+		bufPool* tmpBufPool = bufpool[i];
+		while(bufDescTable[i].valid || bufPool[i]){
+			if(bufDescTable[i].valid){
+				bufDescTable[i].dirty = false; //flushes out dirty bit
+				tmpBufDesc = bufDescTable[i];
+				bufDescrtable[i] = bufDescTable[i]->next;
+				delete tmpBufDesc;
+			}
+			else { //enters else only if bufPool[i] is true. then deallocates bufpool
+				tmpBufPool = bufpool[i];
+				bufPool[i] = bufpool[i]->next;
+				delete tmpbufPool;
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 			}
 		}
 	}
 	delete bufDescTable;
+<<<<<<< HEAD
 	delete bufPool;
 	delete hashTable;
+=======
+	delete bufpool;
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 }
 
 void BufMgr::advanceClock()
 {
+<<<<<<< HEAD
 	if(clockHand == (numBufs - 1)){
+=======
+	if(clockHand = numBufs - 1){
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 		clockHand = 0;
 	}
 	else{
@@ -70,6 +96,7 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 { 
+<<<<<<< HEAD
 	for(FrameId i = 0; i < numBufs; i++){
 		int pinC = 0;
 		if (bufDescTable[i].refbit){ //
@@ -93,12 +120,56 @@ void BufMgr::allocBuf(FrameId & frame)
 	if(pinC = numBufs){
 		throw BufferExceededException():
 	}
-
-
+=======
+	int pinC = 0; // counts number of pinned frames
+	bool cont = true;
+	while(cont){
+		advanceClock();
+		if(bufDescTable[clockHand].valid){ // else: call set() on the frame
+			if(!bufDescTable[clockHand].refbit){
+				if(bufDescTable[clockHand].pinCnt == 0){
+					if(bufDescTable[clockHand].dirty){
+						// flush page to disk
+					}
+					else{
+						bufDescTable[i].set(file, pageNo); // correct parameters ?
+					}
+				}
+				else{ // advance clock pointer
+					pinC = pinC + 1;
+					cont = true;
+				}
+			}
+			else{// advance clock pointer
+				cont = true;
+			}
+		}
+		else{
+			bufDescTable[i].set(file, pageNo); // correct parameters ?
+		}
+	}
+	// throws exception if all buffer pages are pinned
+	if(pinC = numBufs){
+		throw BufferExceededException():
+	}
+	// Use frame
+	if(bufDescTable[clockHand].valid){
+		// remove entry from hash table
+		if (hashTable.lookup(file,pageNo, frame) == frame){
+			hashTable.remove(file, pageNo); // correct parameters ?
+		}
+	}
 
 }
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 
 
+
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> 106c06619242f093339382eb9660e1cf40e88268
 void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 {
 }

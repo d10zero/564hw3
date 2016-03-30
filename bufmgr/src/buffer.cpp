@@ -71,6 +71,19 @@ void BufMgr::advanceClock()
 void BufMgr::allocBuf(FrameId & frame) 
 { 
   for(FrameId i = 0; i < numBufs; i++){
+    if(bufDescTable[i].valid){ // else: call set() on the frame
+      if(!bufDescTable[i].refbit){ // else,: advance clock pointer
+	if(bufDescTable[i].pinCnt > 0){
+	  
+	}
+      }
+    }
+  }
+
+
+
+
+  for(FrameId i = 0; i < numBufs; i++){
     int pinC = 0;
     if (bufDescTable[i].refbit){ // 
       bufDescTable[i].refbit = false;

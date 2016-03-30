@@ -71,29 +71,6 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 { 
-	for(FrameId i = 0; i < numBufs; i++){
-		int pinC = 0;
-		if (bufDescTable[i].refbit){ //
-			bufDescTable[i].refbit = false;
-			advanceClock();
-		}
-		else{
-			if(bufDescTable[i].dirty){
-				// write to page to disk, then select for replacement
-				hashTable.remove(bufDescTable.file, bufDescTable.pageNo) // removes page from frame
-							  hashTable.insert(bufDescTable.file, // ????
-			}
-			else if(bufDescTable[i].pinCnt > 0){ // if page is pinned (should value be 0?) *****
-				pinC = pinC + 1; // increment pinned count.
-			}
-			else{
-				// this frame is selected for replacement
-			}
-		}
-	}
-	if(pinC = numBufs){
-		throw BufferExceededException():
-	}
 	int pinC = 0; // counts number of pinned frames
 	bool cont = true;
 	while(cont){
@@ -105,36 +82,36 @@ void BufMgr::allocBuf(FrameId & frame)
 						Page* tempPage = readPage(bufDescTable[clockHand].pageNo);
 						writePage(tempPage);
 					}
-					bufDescTable[clockHand].file-> writePage();
+					else{
+						bufDescTable[clockHand].file-> writePage();
+
+					}
 				}
-				else{
-					bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
+				else{ // advance clock pointer
+					pinC = pinC + 1;
+					cont = true;
 				}
 			}
-			else{ // advance clock pointer
-				pinC = pinC + 1;
+			else{// advance clock pointer
+				bufDescTable[clockHand].refbit = false;
 				cont = true;
 			}
 		}
-		else{// advance clock pointer
-			cont = true;
+		else{
+			bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
 		}
 	}
-	else{
-		bufDescTable[i].set(bufDescTable[clockHand].file, pageNo); // correct parameters ?
+	// throws exception if all buffer pages are pinned
+	if(pinC = numBufs){
+		throw BufferExceededException():
 	}
-}
-// throws exception if all buffer pages are pinned
-if(pinC = numBufs){
-	throw BufferExceededException():
-}
-// Use frame
-if(bufDescTable[clockHand].valid){
-	// remove entry from hash table
-	if (hashTable.lookup(file,pageNo, frame) == frame){
-		hashTable.remove(file, pageNo); // correct parameters ?
+	// Use frame
+	if(bufDescTable[clockHand].valid){
+		// remove entry from hash table
+		if (hashTable.lookup(file,pageNo, frame) == frame){
+			hashTable.remove(file, pageNo); // correct parameters ?
+		}
 	}
-}
 
 }
 

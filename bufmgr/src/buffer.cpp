@@ -148,6 +148,7 @@ void BufMgr::allocBuf(FrameId & frame)
 		std::cout << "clockHand: after advanceClock()" << clockHand << "\n";
 		if(bufDescTable[clockHand].valid){ // else: call set() on the frame
 			std::cout << "in clockhand.valid = true \n";
+			hashTable->remove(bufDescTable[clockHand].file, bufDescTable[clockHand].pageNo);
 			if(!bufDescTable[clockHand].refbit){
 				std::cout << "pinCnt: " << bufDescTable[clockHand].pinCnt << "\n";
 				if(bufDescTable[clockHand].pinCnt != 0){
@@ -162,6 +163,10 @@ void BufMgr::allocBuf(FrameId & frame)
 					} catch (HashNotFoundException e){
 						std::cout << "HasNotFoundException in ->remove when .valid == true\n";
 						//cont = false;
+						Page tempPage = bufDescTable[clockHand].file->readPage(bufDescTable[clockHand].pageNo);
+						flushFile(bufDescTable[clockHand].file);
+						bufDescTable[clockHand].Set(bufDescTable[clockHand].file, bufDescTable[clockHand].pageNo);
+						cont = false;
 					}
 					cont = false;
 				}
@@ -186,13 +191,6 @@ void BufMgr::allocBuf(FrameId & frame)
 			cont = false;
 		}
 	}
-	// throws exception if all buffer pages are pinned
-	if(pinC == numBufs){
-		std::cout << "pinc:" << pinC << " numBufs:" << numBufs << "\n";
-		throw BufferExceededException();
-	}
-
-	// Use frame
 	 */
 
 }
@@ -296,7 +294,6 @@ void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
 
 void BufMgr::disposePage(File* file, const PageId PageNo)
 {
-	std::cout << "in disposePage \n";
 	FrameId frameNo = (FrameId)-1; // ************************ not sure, need to find alternative initial frameId value ***
 	hashTable->lookup(file, PageNo, frameNo);
 	if(frameNo == (FrameId)-1){

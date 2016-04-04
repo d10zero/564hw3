@@ -173,6 +173,7 @@ void test1()
 	//Allocating pages in a file...
 	for (i = 0; i < num; i++)
 	{
+		
 		bufMgr->allocPage(file1ptr, pid[i], page);
 		sprintf((char*)tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
 		rid[i] = page->insertRecord(tmpbuf);
@@ -182,17 +183,11 @@ void test1()
 	//Reading pages back...
 	for (i = 0; i < num; i++)
 	{
-		std::cout << "i: " << i << "\n";
 		//std::cout << "bfore readPage\n";
 		bufMgr->readPage(file1ptr, pid[i], page);
 		sprintf((char*)&tmpbuf, "test.1 Page %d %7.1f", pid[i], (float)pid[i]);
 		//std::cout << "if comparison: " << strncmp(page->getRecord(rid[i]).c_str(), tmpbuf, strlen(tmpbuf)) << "\n";
-		std::cout << "-------------------------\n";
-		std::cout << "-------------------------\n";
-		std::cout << "-------------------------\n";
-
-		std::cout << "page->getRecord(rid[i]).c_str(): " << page->getRecord(rid[i]).c_str() << "\n";
-		std::cout << "tmpbuf: " << tmpbuf;
+		
 		if(strncmp(page->getRecord(rid[i]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
 		{
 

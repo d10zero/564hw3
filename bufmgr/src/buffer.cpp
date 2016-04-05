@@ -79,6 +79,7 @@ void BufMgr::allocBuf(FrameId & frame)
 
 	while(true){
 		advanceClock();
+		std::cout <<"\n" <<"advanceclock\n";
 		if (bufDescTable[clockHand].valid){
 			if(!bufDescTable[clockHand].refbit){
 				//advanceClock();
@@ -95,6 +96,9 @@ void BufMgr::allocBuf(FrameId & frame)
 			//exit
 			break;
 		}
+		if(pinC == (numBufs -1)){
+				throw BufferExceededException();
+			}
 	}
 	//dirt bit set?
 	if (bufDescTable[clockHand].valid){

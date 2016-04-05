@@ -217,7 +217,7 @@ void test2()
 		//std::cout <<"\n" << "before readPage()";
 		bufMgr->readPage(file1ptr, pageno1, page);
 		std::cout <<"\n" << "after readPage: pageno1: " << pageno1 <<"\n";
-
+		// ************************************************************************ ERROR IS HERE************
 		sprintf((char*)tmpbuf, "test.1 Page %d %7.1f", pageno1, (float)pageno1);
 
 		std::cout <<"\n" << "getRecord: " << page->getRecord(rid[index]).c_str();

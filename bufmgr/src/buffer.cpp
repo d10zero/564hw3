@@ -185,6 +185,7 @@ void BufMgr::flushFile(const File* file)
 			hashTable->remove(file, bufDescTable[i].pageNo);
 			//(c)
 			bufDescTable[i].Clear(); // clears frame
+
 			//(d)
 		}
 	}

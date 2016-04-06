@@ -286,7 +286,7 @@ void test4()
 void test5()
 {
 	std::cout << "in test5 \n";
-	for (i = 0; i < num-1; i++) {
+	for (i = 0; i < num; i++) {
 		bufMgr->allocPage(file5ptr, pid[i], page);
 		sprintf((char*)tmpbuf, "test.5 Page %d %7.1f", pid[i], (float)pid[i]);
 		rid[i] = page->insertRecord(tmpbuf);

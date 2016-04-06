@@ -5,6 +5,7 @@
  * Copyright (c) 2012 Database Group, Computer Sciences Department, University of Wisconsin-Madison.
  */
 
+
 #include <memory>
 #include <iostream>
 #include "buffer.h"
@@ -91,7 +92,6 @@ void BufMgr::allocBuf(FrameId & frame)
 							}
 						}
 					}
-			//		std::cout <<"\n pinC: " << pinC << "\n";
 					if(pinC > (numBufs - 1)){
 						throw BufferExceededException();
 					}
@@ -136,7 +136,6 @@ void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 {
 	FrameId frameNo;
 	try{
-	//	std::cout <<"\n" <<"CASE 2: --------------------";
 		hashTable->lookup(file, pageNo, frameNo);  // Case 2: Page is in the buffer pool
 		bufDescTable[frameNo].refbit = true;
 		bufDescTable[frameNo].pinCnt++;
@@ -144,7 +143,6 @@ void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 		page = &bufPool[frameNo];
 	}
 	catch(HashNotFoundException e){ // Case 1: Page is not in the buffer pool
-	//std::cout <<"\n" <<"CASE 1: --------------------";
 		allocBuf(frameNo);
 		bufPool[frameNo] = file->readPage(pageNo);
 		hashTable->insert(file, pageNo, frameNo);
@@ -171,7 +169,6 @@ void BufMgr::unPinPage(File* file, const PageId pageNo, const bool dirty)
 	}
 
 	bufDescTable[frameNo].pinCnt = (bufDescTable[frameNo].pinCnt - 1);
-//	std::cout <<"\n decremented pinCnt: " << bufDescTable[frameNo].pinCnt << "\n";
 	
 	if(dirty == true){
 		bufDescTable[frameNo].dirty = true;
@@ -220,10 +217,8 @@ void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page)
 			}
 		}
 	}
-	std::cout <<"\n Current Pin Count: " << pinCC << "\n";
 	FrameId frameNo;
 	allocBuf(frameNo);
-
 	bufPool[frameNo] = file->allocatePage();
 	//returns newly allocated page to the caller via the pageNo parameter
 	PageId pageNo1 = bufPool[frameNo].page_number();

@@ -212,7 +212,7 @@ void test2()
 		rid2 = page2->insertRecord(tmpbuf);
 
 		int index = random() % num;
-    pageno1 = pid[index];
+   		pageno1 = pid[index];
 		bufMgr->readPage(file1ptr, pageno1, page);
 		sprintf((char*)tmpbuf, "test.1 Page %d %7.1f", pageno1, (float)pageno1);
 		if(strncmp(page->getRecord(rid[index]).c_str(), tmpbuf, strlen(tmpbuf)) != 0)
@@ -286,12 +286,12 @@ void test4()
 void test5()
 {
 	std::cout << "in test5 \n";
-	for (i = 0; i < num; i++) {
+	for (i = 0; i < num-1; i++) {
 		bufMgr->allocPage(file5ptr, pid[i], page);
 		sprintf((char*)tmpbuf, "test.5 Page %d %7.1f", pid[i], (float)pid[i]);
 		rid[i] = page->insertRecord(tmpbuf);
 	}
-
+	std::cout <<"\n outside for loop. \n";
 	PageId tmp;
 	try
 	{

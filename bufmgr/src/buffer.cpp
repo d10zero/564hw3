@@ -55,8 +55,8 @@ BufMgr::~BufMgr() {
 		}
 	}
 
-	delete bufDescTable;
-	delete bufPool;
+	delete [] bufDescTable;
+	delete [] bufPool;
 	delete hashTable;
 }
 
@@ -157,18 +157,19 @@ void BufMgr::unPinPage(File* file, const PageId pageNo, const bool dirty)
 void BufMgr::flushFile(const File* file) 
 {
 	for(FrameId i = 0; i < numBufs; i++){
-		if (bufDescTable[i].file == file){
-			if(bufDescTable[i].pinCnt > 0){
-				throw PagePinnedException(file->filename(), bufDescTable[i].pageNo, bufDescTable[i].frameNo);
+		BufDesc* temp = &(bufDescTable[i]);
+		if (temp->file == file){
+			if(temp->pinCnt > 0){
+				throw PagePinnedException(file->filename(), temp->pageNo, temp->frameNo);
 			}
-			if(bufDescTable[i].valid == false){
-				bufDescTable[i].pinCnt = 0;
-				throw BadBufferException(bufDescTable[i].frameNo,bufDescTable[i].dirty, bufDescTable[i].valid, bufDescTable[i].refbit);
+			if(temp->valid == false){
+				temp->pinCnt = 0;
+				throw BadBufferException(temp->frameNo, temp->dirty, temp->valid, temp->refbit);
 			}
 			// (a)
-			if (bufDescTable[i].dirty){
-				bufDescTable[i].file -> writePage(bufPool[i]); // flushes the page to disk
-				bufDescTable[i].dirty = false; // sets dirty bit to false
+			if (temp->dirty){
+				temp->file -> writePage(bufPool[i]); // flushes the page to disk
+				temp->dirty = false; // sets dirty bit to false
 			}
 			//(b)
 			try{
@@ -177,7 +178,7 @@ void BufMgr::flushFile(const File* file)
 				return;
 			}
 			//(c)
-			bufDescTable[i].Clear(); // clears frame
+			temp->Clear(); // clears frame
 			//bufDescTable[i].valid = false;
 			//bufDescTable[i].pinCnt = 0;
 		}
